@@ -1,0 +1,6 @@
+.venv/
+heartratedata/
+heartratedata.zip
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
