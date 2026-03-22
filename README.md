@@ -4,7 +4,9 @@ Patient-calibrated machine learning models for automated sleep staging using exc
 
 ## Overview
 
-This project implements and evaluates patient-calibrated pipelines for classifying sleep stages from wrist actigraphy (accelerometer x, y, z) data, validated against polysomnography (PSG) ground truth labels. Two classification granularities and two model architectures are explored:
+This project rigorously quantifies what wrist accelerometry can and cannot distinguish in sleep staging. Wrist-worn accelerometers capture gross motor activity but lack the neurophysiological signals (EEG, EOG, EMG) that clinically define sleep stages. Rather than claiming clinical-grade accuracy from a fundamentally limited modality, we establish principled performance baselines using proper subject-level cross-validation and extensive feature engineering, characterizing which stage distinctions are recoverable from motion data alone.
+
+Two classification granularities and two model architectures are explored:
 
 | Model | Stages | Description |
 |-------|--------|-------------|
@@ -30,11 +32,13 @@ Uses the [Motion and Heart Rate from a Wrist-Worn Wearable and Labeled Sleep fro
 
 ### Model Pipeline
 - **Cross-validation**: GroupKFold (5 splits) with subject-level grouping — no data leakage between subjects
-- **Class balancing**: SMOTE oversampling for minority sleep stages
+- **Class balancing**: `class_weight='balanced'` for implicit inverse-frequency reweighting
 - **Probability calibration**: CalibratedClassifierCV with isotonic calibration
 - **Post-processing**: Multi-class threshold optimization (REM, N3), rolling mode smoothing, and minimum bout enforcement (3 min) to remove clinically implausible stage transitions
 
 All reported metrics are **out-of-fold** predictions, reflecting genuine generalization performance.
+
+**Known limitation**: Threshold optimization (REM/N3) is performed on the same OOF predictions used for evaluation, which introduces mild optimistic bias. A fully rigorous approach would use nested CV; for this course project, the limitation is acknowledged.
 
 ## Repository Structure
 
